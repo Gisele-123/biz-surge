@@ -7,6 +7,7 @@ import Profile from '@/components/Profile';
 import Recommendations from '@/components/Recommendations';
 import Analytics from '@/components/Analytics';
 import Settings from '@/components/Settings';
+import Market from '@/components/Market';
 
 const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -22,6 +23,8 @@ const Index = () => {
         return <Recommendations sidebarCollapsed={sidebarCollapsed} />;
       case 'analytics':
         return <Analytics sidebarCollapsed={sidebarCollapsed} />;
+      case 'market':
+        return <Market sidebarCollapsed={sidebarCollapsed} />;
       case 'settings':
         return <Settings sidebarCollapsed={sidebarCollapsed} />;
       default:

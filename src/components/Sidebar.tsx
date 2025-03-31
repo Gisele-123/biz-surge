@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Lightbulb, User, BarChart3, Settings, Menu, ChevronLeft } from 'lucide-react';
+import { Home, Lightbulb, User, BarChart3, Settings, Menu, ChevronLeft, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type SidebarProps = {
@@ -13,6 +13,7 @@ type SidebarProps = {
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'recommendations', label: 'Ideas', icon: Lightbulb },
+  { id: 'market', label: 'Market', icon: ShoppingCart },
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'settings', label: 'Settings', icon: Settings },
