@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ChevronRight, Filter, Lightbulb, Save, Star, Target, ThumbsDown, ThumbsUp } from 'lucide-react';
 
@@ -8,6 +9,8 @@ type RecommendationsProps = {
 };
 
 const Recommendations = ({ sidebarCollapsed }: RecommendationsProps) => {
+  const navigate = useNavigate();
+  
   const ideas = [
     {
       id: 1,
@@ -163,7 +166,10 @@ const Recommendations = ({ sidebarCollapsed }: RecommendationsProps) => {
                 </div>
                 
                 <div className="flex lg:flex-col justify-between gap-4 lg:border-l lg:pl-6 lg:border-border/50">
-                  <button className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center">
+                  <button 
+                    className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center"
+                    onClick={() => navigate(`/idea/${idea.id}`)}
+                  >
                     <Target size={18} className="mr-2" />
                     Explore
                   </button>
