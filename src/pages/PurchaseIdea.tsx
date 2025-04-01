@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -6,11 +5,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { ArrowLeft, Check, CreditCard, Download, ExternalLink, Play, ShieldCheck, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Check, CreditCard, Download, ExternalLink, Play, ShieldCheck, ShoppingCart, CreditCard as CreditCardIcon, Wallet, Landmark, QrCode } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-// This would normally come from a database/API
 const sampleIdeas = [
   {
     id: '1',
@@ -110,14 +115,30 @@ const sampleIdeas = [
   }
 ];
 
+const paymentSchema = z.object({
+  paymentMethod: z.enum(["creditCard", "paypal", "bankTransfer", "crypto"]),
+  cardNumber: z.string().optional(),
+  cardHolder: z.string().optional(),
+  expiryDate: z.string().optional(),
+  cvv: z.string().optional(),
+});
+
 const PurchaseIdea = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [purchaseComplete, setPurchaseComplete] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStep, setPaymentStep] = useState(1);
   
-  // Find the idea by id from our sample data
   const idea = sampleIdeas.find(i => i.id === id);
+
+  const form = useForm<z.infer<typeof paymentSchema>>({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: {
+      paymentMethod: "creditCard",
+    },
+  });
   
   if (!idea) {
     return (
@@ -133,13 +154,21 @@ const PurchaseIdea = () => {
     );
   }
 
-  const handlePurchase = () => {
-    // In a real app, this would process payment and grant access
+  const handlePurchase = (values: z.infer<typeof paymentSchema>) => {
+    setIsProcessing(true);
+    console.log("Processing payment with:", values);
+    
     setTimeout(() => {
+      setIsProcessing(false);
       setShowPaymentDialog(false);
       setPurchaseComplete(true);
       toast.success("Purchase successful! You now have access to the full idea details.");
     }, 1500);
+  };
+
+  const resetPaymentForm = () => {
+    setPaymentStep(1);
+    form.reset();
   };
   
   return (
@@ -153,7 +182,6 @@ const PurchaseIdea = () => {
         </Link>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main content - left side (2/3 width) */}
           <div className="lg:col-span-2">
             <div className="mb-6">
               <div className="relative h-[300px] w-full bg-muted rounded-lg overflow-hidden">
@@ -329,42 +357,286 @@ const PurchaseIdea = () => {
                     <p className="text-muted-foreground text-center max-w-md mb-6">
                       You need to purchase this idea to access the detailed information and resources.
                     </p>
-                    <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+                    <Dialog open={showPaymentDialog} onOpenChange={(open) => {
+                      setShowPaymentDialog(open);
+                      if (!open) resetPaymentForm();
+                    }}>
                       <DialogTrigger asChild>
                         <Button>Purchase Now</Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                           <DialogTitle>Complete Your Purchase</DialogTitle>
                           <DialogDescription>
-                            Enter your payment details to get immediate access to this idea.
+                            Select a payment method and enter your details to get immediate access.
                           </DialogDescription>
                         </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="flex justify-between">
-                            <span>Idea: {idea.title}</span>
-                            <span className="font-bold">${idea.price}</span>
-                          </div>
-                          <Separator />
-                          <div className="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>${idea.price}</span>
-                          </div>
-                          
-                          <div className="bg-muted p-4 rounded-lg">
-                            <p className="text-sm text-center text-muted-foreground">
-                              Demo Mode: Click "Complete Purchase" to simulate payment
-                            </p>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>
-                            Cancel
-                          </Button>
-                          <Button onClick={handlePurchase}>
-                            <CreditCard className="mr-2 h-4 w-4" /> Complete Purchase
-                          </Button>
-                        </DialogFooter>
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(handlePurchase)} className="space-y-4 py-4">
+                            {paymentStep === 1 && (
+                              <>
+                                <div className="flex justify-between mb-4">
+                                  <span>Idea: {idea.title}</span>
+                                  <span className="font-bold">${idea.price}</span>
+                                </div>
+                                <Separator />
+                                <div className="flex justify-between font-bold">
+                                  <span>Total</span>
+                                  <span>${idea.price}</span>
+                                </div>
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="paymentMethod"
+                                  render={({ field }) => (
+                                    <FormItem className="space-y-3 mt-4">
+                                      <FormLabel>Select Payment Method</FormLabel>
+                                      <FormControl>
+                                        <RadioGroup
+                                          onValueChange={field.onChange}
+                                          defaultValue={field.value}
+                                          className="grid grid-cols-2 gap-4"
+                                        >
+                                          <Label
+                                            htmlFor="creditCard"
+                                            className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                                              field.value === "creditCard" ? "border-primary" : ""
+                                            }`}
+                                          >
+                                            <RadioGroupItem
+                                              value="creditCard"
+                                              id="creditCard"
+                                              className="sr-only"
+                                            />
+                                            <CreditCardIcon className="mb-3 h-6 w-6" />
+                                            <span className="text-sm">Credit Card</span>
+                                          </Label>
+                                          <Label
+                                            htmlFor="paypal"
+                                            className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                                              field.value === "paypal" ? "border-primary" : ""
+                                            }`}
+                                          >
+                                            <RadioGroupItem
+                                              value="paypal"
+                                              id="paypal"
+                                              className="sr-only"
+                                            />
+                                            <Wallet className="mb-3 h-6 w-6" />
+                                            <span className="text-sm">PayPal</span>
+                                          </Label>
+                                          <Label
+                                            htmlFor="bankTransfer"
+                                            className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                                              field.value === "bankTransfer" ? "border-primary" : ""
+                                            }`}
+                                          >
+                                            <RadioGroupItem
+                                              value="bankTransfer"
+                                              id="bankTransfer"
+                                              className="sr-only"
+                                            />
+                                            <Landmark className="mb-3 h-6 w-6" />
+                                            <span className="text-sm">Bank Transfer</span>
+                                          </Label>
+                                          <Label
+                                            htmlFor="crypto"
+                                            className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                                              field.value === "crypto" ? "border-primary" : ""
+                                            }`}
+                                          >
+                                            <RadioGroupItem
+                                              value="crypto"
+                                              id="crypto"
+                                              className="sr-only"
+                                            />
+                                            <QrCode className="mb-3 h-6 w-6" />
+                                            <span className="text-sm">Cryptocurrency</span>
+                                          </Label>
+                                        </RadioGroup>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <div className="flex justify-between pt-4">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => setShowPaymentDialog(false)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button 
+                                    type="button" 
+                                    onClick={() => setPaymentStep(2)}
+                                  >
+                                    Continue
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                            
+                            {paymentStep === 2 && (
+                              <>
+                                {form.watch("paymentMethod") === "creditCard" && (
+                                  <div className="space-y-4">
+                                    <FormField
+                                      control={form.control}
+                                      name="cardNumber"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Card Number</FormLabel>
+                                          <FormControl>
+                                            <Input 
+                                              placeholder="1234 5678 9012 3456" 
+                                              {...field} 
+                                              maxLength={19}
+                                              onChange={(e) => {
+                                                const value = e.target.value.replace(/\s/g, "");
+                                                const formattedValue = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+                                                field.onChange(formattedValue);
+                                              }}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    <FormField
+                                      control={form.control}
+                                      name="cardHolder"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Card Holder Name</FormLabel>
+                                          <FormControl>
+                                            <Input placeholder="John Doe" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <FormField
+                                        control={form.control}
+                                        name="expiryDate"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Expiry Date</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="MM/YY" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="cvv"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>CVV</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="123" {...field} maxLength={4} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {form.watch("paymentMethod") === "paypal" && (
+                                  <div className="py-8 text-center">
+                                    <Wallet className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+                                    <p className="text-muted-foreground mb-4">
+                                      You'll be redirected to PayPal to complete your purchase
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {form.watch("paymentMethod") === "bankTransfer" && (
+                                  <div className="py-8 space-y-4">
+                                    <p className="text-muted-foreground">
+                                      Please use the following details to make a bank transfer:
+                                    </p>
+                                    <div className="bg-muted p-4 rounded-md space-y-2 text-sm">
+                                      <div className="flex justify-between">
+                                        <span className="font-medium">Bank:</span>
+                                        <span>Quasar Bank</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="font-medium">Account Name:</span>
+                                        <span>Quasar Innovations Inc</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="font-medium">Account Number:</span>
+                                        <span>1234567890</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="font-medium">Routing Number:</span>
+                                        <span>987654321</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="font-medium">Reference:</span>
+                                        <span>IDEA-{id}</span>
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Please include the reference number in your transfer.
+                                      Access will be granted within 24 hours of receiving your payment.
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {form.watch("paymentMethod") === "crypto" && (
+                                  <div className="py-8 space-y-4">
+                                    <p className="text-muted-foreground">
+                                      Send payment to the following wallet address:
+                                    </p>
+                                    <div className="bg-muted p-4 rounded-md text-center">
+                                      <QrCode className="h-32 w-32 mx-auto mb-4" />
+                                      <p className="text-xs break-all bg-background p-2 rounded">
+                                        0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+                                      </p>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">
+                                      We accept Bitcoin, Ethereum, and USDC.
+                                      Access will be granted automatically once your transaction is confirmed.
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                <div className="flex justify-between pt-4">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => setPaymentStep(1)}
+                                  >
+                                    Back
+                                  </Button>
+                                  <Button 
+                                    type="submit"
+                                    disabled={isProcessing}
+                                  >
+                                    {isProcessing ? (
+                                      <>Processing...</>
+                                    ) : (
+                                      <>Complete Purchase</>
+                                    )}
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                            
+                            <div className="bg-muted p-4 rounded-md text-sm text-muted-foreground mt-6">
+                              <p className="text-center">
+                                Demo Mode: Click "Complete Purchase" to simulate payment
+                              </p>
+                            </div>
+                          </form>
+                        </Form>
                       </DialogContent>
                     </Dialog>
                   </div>
@@ -427,7 +699,10 @@ const PurchaseIdea = () => {
                     <p className="text-muted-foreground text-center max-w-md mb-6">
                       You need to purchase this idea to access the implementation guide.
                     </p>
-                    <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+                    <Dialog open={showPaymentDialog} onOpenChange={(open) => {
+                      setShowPaymentDialog(open);
+                      if (!open) resetPaymentForm();
+                    }}>
                       <DialogTrigger asChild>
                         <Button>Purchase Now</Button>
                       </DialogTrigger>
@@ -441,7 +716,6 @@ const PurchaseIdea = () => {
             </Tabs>
           </div>
           
-          {/* Sidebar - right side (1/3 width) */}
           <div className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardHeader>
@@ -464,7 +738,10 @@ const PurchaseIdea = () => {
                     <span className="text-green-600 font-medium">Purchased Successfully</span>
                   </div>
                 ) : (
-                  <Button className="w-full" onClick={() => setShowPaymentDialog(true)}>
+                  <Button 
+                    className="w-full" 
+                    onClick={() => setShowPaymentDialog(true)}
+                  >
                     <ShoppingCart className="mr-2 h-4 w-4" /> Purchase Idea
                   </Button>
                 )}
