@@ -15,6 +15,7 @@ import ResetPassword from "./pages/ResetPassword";
 import QuasarHome from "./pages/QuasarHome";
 import UploadIdea from "./pages/UploadIdea";
 import PurchaseIdea from "./pages/PurchaseIdea";
+import GenerateIdeas from "./pages/GenerateIdeas";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/upload-idea" element={<UploadIdea />} />
           <Route path="/purchase-idea/:id" element={<PurchaseIdea />} />
+          <Route path="/generate-ideas" element={<GenerateIdeas />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

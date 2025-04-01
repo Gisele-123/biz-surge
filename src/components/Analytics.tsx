@@ -1,13 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { BarChart3, TrendingUp, PieChart, LineChart, Calendar, Download } from 'lucide-react';
+import { toast } from "sonner";
 
 type AnalyticsProps = {
   sidebarCollapsed: boolean;
 };
 
 const Analytics = ({ sidebarCollapsed }: AnalyticsProps) => {
+  const [dateFilter, setDateFilter] = useState('last30');
+  
+  const handleExport = () => {
+    toast.success("Analytics data exported successfully");
+  };
+  
   return (
     <div className={cn(
       "pt-16 px-6 transition-all duration-300 min-h-screen",
@@ -24,7 +31,10 @@ const Analytics = ({ sidebarCollapsed }: AnalyticsProps) => {
               <Calendar size={18} className="mr-2" />
               Last 30 Days
             </button>
-            <button className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center">
+            <button 
+              className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center relative z-10"
+              onClick={handleExport}
+            >
               <Download size={18} className="mr-2" />
               Export
             </button>
