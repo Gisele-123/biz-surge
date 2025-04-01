@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Check, Eye, EyeOff, KeyRound } from "lucide-react";
 
 const formSchema = z.object({
