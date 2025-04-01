@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Filter, Search, Tag, Play, Upload, DollarSign, ShoppingCart, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link, useNavigate } from 'react-router-dom';
 
 type Idea = {
   id: string;
@@ -82,6 +83,7 @@ const technologies = ['AI', 'Blockchain', 'IoT', 'AR/VR', 'Mobile App', 'Web App
 const categories = ['Agriculture', 'Healthcare', 'Education', 'Transport', 'Finance', 'Entertainment', 'Retail', 'Real Estate', 'Energy', 'Manufacturing'];
 
 const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('browse');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
@@ -302,7 +304,9 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
                         <DollarSign size={18} className="text-muted-foreground mr-1" />
                         {idea.price}
                       </div>
-                      <Button className="gap-2"><ShoppingCart size={16} /> Purchase</Button>
+                      <Link to={`/purchase-idea/${idea.id}`}>
+                        <Button className="gap-2"><ShoppingCart size={16} /> Purchase</Button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 ))}
@@ -337,7 +341,9 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
               </div>
               <h3 className="text-xl font-medium mb-2">You haven't uploaded any ideas</h3>
               <p className="text-muted-foreground mb-6">Share your innovative ideas and demos with potential buyers.</p>
-              <Button><Upload size={16} className="mr-2" /> Upload New Idea</Button>
+              <Button onClick={() => navigate('/upload-idea')}>
+                <Upload size={16} className="mr-2" /> Upload New Idea
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
