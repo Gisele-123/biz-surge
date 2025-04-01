@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -86,20 +86,27 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [filteredIdeas, setFilteredIdeas] = useState<Idea[]>(sampleIdeas);
+  const [showTechFilter, setShowTechFilter] = useState(false);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   
-  // Filter ideas based on search and filters
-  const filteredIdeas = sampleIdeas.filter(idea => {
-    const matchesSearch = idea.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          idea.description.toLowerCase().includes(searchTerm.toLowerCase());
+  // Filter ideas based on search and filters whenever the dependencies change
+  useEffect(() => {
+    const filtered = sampleIdeas.filter(idea => {
+      const matchesSearch = idea.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            idea.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesTech = selectedTech.length === 0 || 
+                          selectedTech.some(tech => idea.technologies.includes(tech));
+      
+      const matchesCategory = selectedCategories.length === 0 || 
+                             selectedCategories.includes(idea.category);
+      
+      return matchesSearch && matchesTech && matchesCategory;
+    });
     
-    const matchesTech = selectedTech.length === 0 || 
-                         selectedTech.some(tech => idea.technologies.includes(tech));
-    
-    const matchesCategory = selectedCategories.length === 0 || 
-                           selectedCategories.includes(idea.category);
-    
-    return matchesSearch && matchesTech && matchesCategory;
-  });
+    setFilteredIdeas(filtered);
+  }, [searchTerm, selectedTech, selectedCategories]);
 
   const toggleTechFilter = (tech: string) => {
     if (selectedTech.includes(tech)) {
@@ -115,6 +122,12 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
     } else {
       setSelectedCategories([...selectedCategories, category]);
     }
+  };
+
+  const clearFilters = () => {
+    setSelectedTech([]);
+    setSelectedCategories([]);
+    setSearchTerm('');
   };
 
   return (
@@ -136,7 +149,7 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
             <TabsTrigger value="my-ideas">My Ideas</TabsTrigger>
           </TabsList>
 
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <Input
@@ -149,94 +162,161 @@ const Market = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
             
             {activeTab === 'browse' && (
               <div className="flex gap-4">
-                <div className="relative group">
-                  <Button variant="outline" className="gap-2">
+                <div className="relative">
+                  <Button 
+                    variant="outline" 
+                    className="gap-2"
+                    onClick={() => {
+                      setShowTechFilter(!showTechFilter);
+                      setShowCategoryFilter(false);
+                    }}
+                  >
                     <Filter size={16} /> Technology
                   </Button>
-                  <div className="absolute z-10 right-0 mt-2 p-3 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-border/50 hidden group-hover:block w-64">
-                    <div className="grid grid-cols-2 gap-2">
-                      {technologies.map(tech => (
-                        <Badge
-                          key={tech}
-                          variant={selectedTech.includes(tech) ? "default" : "outline"}
-                          className="cursor-pointer"
-                          onClick={() => toggleTechFilter(tech)}
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
+                  {showTechFilter && (
+                    <div className="absolute z-20 right-0 mt-2 p-3 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-border/50 w-64">
+                      <div className="grid grid-cols-2 gap-2">
+                        {technologies.map(tech => (
+                          <Badge
+                            key={tech}
+                            variant={selectedTech.includes(tech) ? "default" : "outline"}
+                            className="cursor-pointer"
+                            onClick={() => toggleTechFilter(tech)}
+                          >
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
-                <div className="relative group">
-                  <Button variant="outline" className="gap-2">
+                <div className="relative">
+                  <Button 
+                    variant="outline" 
+                    className="gap-2"
+                    onClick={() => {
+                      setShowCategoryFilter(!showCategoryFilter);
+                      setShowTechFilter(false);
+                    }}
+                  >
                     <Tag size={16} /> Industry
                   </Button>
-                  <div className="absolute z-10 right-0 mt-2 p-3 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-border/50 hidden group-hover:block w-64">
-                    <div className="grid grid-cols-2 gap-2">
-                      {categories.map(category => (
-                        <Badge
-                          key={category}
-                          variant={selectedCategories.includes(category) ? "default" : "outline"}
-                          className="cursor-pointer"
-                          onClick={() => toggleCategoryFilter(category)}
-                        >
-                          {category}
-                        </Badge>
-                      ))}
+                  {showCategoryFilter && (
+                    <div className="absolute z-20 right-0 mt-2 p-3 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-border/50 w-64">
+                      <div className="grid grid-cols-2 gap-2">
+                        {categories.map(category => (
+                          <Badge
+                            key={category}
+                            variant={selectedCategories.includes(category) ? "default" : "outline"}
+                            className="cursor-pointer"
+                            onClick={() => toggleCategoryFilter(category)}
+                          >
+                            {category}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
+
+                {(selectedTech.length > 0 || selectedCategories.length > 0 || searchTerm) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={clearFilters}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    Clear filters
+                  </Button>
+                )}
               </div>
             )}
           </div>
-
-          <TabsContent value="browse" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredIdeas.map((idea) => (
-                <Card key={idea.id} className="overflow-hidden transition-all hover:shadow-lg">
-                  <div className="relative h-48 w-full bg-muted">
-                    <img 
-                      src={idea.thumbnail} 
-                      alt={idea.title}
-                      className="w-full h-full object-cover"
-                    />
-                    {idea.hasDemo && (
-                      <div className="absolute top-2 right-2">
-                        <Badge className="bg-primary/80 text-primary-foreground flex items-center gap-1">
-                          <Play size={12} /> Demo
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl">{idea.title}</CardTitle>
-                        <CardDescription className="text-sm">{idea.seller}</CardDescription>
-                      </div>
-                      <Badge variant="secondary">{idea.category}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="py-2">
-                    <p className="text-sm line-clamp-3 text-muted-foreground">{idea.description}</p>
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {idea.technologies.map((tech) => (
-                        <Badge key={tech} variant="outline" className="text-xs">{tech}</Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="font-bold text-lg flex items-center">
-                      <DollarSign size={18} className="text-muted-foreground mr-1" />
-                      {idea.price}
-                    </div>
-                    <Button className="gap-2"><ShoppingCart size={16} /> Purchase</Button>
-                  </CardFooter>
-                </Card>
+          
+          {/* Show active filters */}
+          {(selectedTech.length > 0 || selectedCategories.length > 0) && (
+            <div className="mb-4 flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-muted-foreground">Active filters:</span>
+              {selectedTech.map(tech => (
+                <Badge 
+                  key={tech} 
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => toggleTechFilter(tech)}
+                >
+                  {tech} ×
+                </Badge>
+              ))}
+              {selectedCategories.map(category => (
+                <Badge 
+                  key={category} 
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => toggleCategoryFilter(category)}
+                >
+                  {category} ×
+                </Badge>
               ))}
             </div>
+          )}
+
+          <TabsContent value="browse" className="mt-0">
+            {filteredIdeas.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredIdeas.map((idea) => (
+                  <Card key={idea.id} className="overflow-hidden transition-all hover:shadow-lg">
+                    <div className="relative h-48 w-full bg-muted">
+                      <img 
+                        src={idea.thumbnail} 
+                        alt={idea.title}
+                        className="w-full h-full object-cover"
+                      />
+                      {idea.hasDemo && (
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-primary/80 text-primary-foreground flex items-center gap-1">
+                            <Play size={12} /> Demo
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-xl">{idea.title}</CardTitle>
+                          <CardDescription className="text-sm">{idea.seller}</CardDescription>
+                        </div>
+                        <Badge variant="secondary">{idea.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="py-2">
+                      <p className="text-sm line-clamp-3 text-muted-foreground">{idea.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {idea.technologies.map((tech) => (
+                          <Badge key={tech} variant="outline" className="text-xs">{tech}</Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <div className="font-bold text-lg flex items-center">
+                        <DollarSign size={18} className="text-muted-foreground mr-1" />
+                        {idea.price}
+                      </div>
+                      <Button className="gap-2"><ShoppingCart size={16} /> Purchase</Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 quasar-card">
+                <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search size={32} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-medium mb-2">No ideas found</h3>
+                <p className="text-muted-foreground mb-6">Try adjusting your filters or search terms</p>
+                <Button onClick={clearFilters}>Clear all filters</Button>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="purchased">

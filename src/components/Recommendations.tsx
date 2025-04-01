@@ -85,7 +85,7 @@ const Recommendations = ({ sidebarCollapsed }: RecommendationsProps) => {
               <Filter size={18} className="mr-2" />
               Filter
             </button>
-            <button className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center">
+            <button className="quasar-button bg-primary text-white hover:bg-primary/90 flex items-center relative z-10">
               <Lightbulb size={18} className="mr-2" />
               Generate Ideas
             </button>
