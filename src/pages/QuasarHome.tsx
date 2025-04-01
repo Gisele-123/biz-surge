@@ -1,18 +1,29 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { Lightbulb, ArrowRight, Sparkles, Brain, BarChart3, DollarSign, Star, Mail, Phone, MapPin, Share2, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Lightbulb, ArrowRight, Sparkles, Brain, BarChart3, DollarSign, Star, Mail, Phone, MapPin, Share2, MessageSquare, CheckCircle2, ShoppingCart, Check } from 'lucide-react';
 import { toast } from "sonner";
 
 const QuasarHome = () => {
+  const navigate = useNavigate();
+  
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Thanks for your message! We'll get back to you soon.");
+  };
+
+  const handleMarketplaceClick = () => {
+    toast.info("Please log in to access the marketplace", {
+      action: {
+        label: "Log in",
+        onClick: () => navigate("/login")
+      }
+    });
   };
 
   return (
@@ -28,37 +39,12 @@ const QuasarHome = () => {
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px]">
-                        <div className="flex items-center gap-2">
-                          <Lightbulb className="h-5 w-5 text-primary" />
-                          <div>
-                            <NavigationMenuLink className="font-medium">Idea Generation</NavigationMenuLink>
-                            <p className="text-sm text-muted-foreground">AI-powered business idea generation</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Brain className="h-5 w-5 text-primary" />
-                          <div>
-                            <NavigationMenuLink className="font-medium">Idea Validation</NavigationMenuLink>
-                            <p className="text-sm text-muted-foreground">Validate your ideas with market data</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <BarChart3 className="h-5 w-5 text-primary" />
-                          <div>
-                            <NavigationMenuLink className="font-medium">Analytics</NavigationMenuLink>
-                            <p className="text-sm text-muted-foreground">Track your idea performance</p>
-                          </div>
-                        </div>
-                      </div>
-                    </NavigationMenuContent>
+                    <Link to="#features">
+                      <Button variant="ghost">Features</Button>
+                    </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <Link to="/market">
-                      <Button variant="ghost">Marketplace</Button>
-                    </Link>
+                    <Button variant="ghost" onClick={handleMarketplaceClick}>Marketplace</Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
                     <Link to="#pricing">
@@ -97,11 +83,9 @@ const QuasarHome = () => {
                     Get Started <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/market">
-                  <Button size="lg" variant="outline">
-                    Explore Marketplace
-                  </Button>
-                </Link>
+                <Button size="lg" variant="outline" onClick={handleMarketplaceClick}>
+                  Explore Marketplace <ShoppingCart className="ml-2 h-5 w-5" />
+                </Button>
               </div>
             </div>
             <div className="lg:w-1/2">
@@ -123,7 +107,7 @@ const QuasarHome = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30" id="features">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">What Makes Quasar Special</h2>
@@ -159,6 +143,145 @@ const QuasarHome = () => {
                 Turn your business concepts into passive income by selling them to eager entrepreneurs.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section - Added new section */}
+      <section className="py-20" id="pricing">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Flexible Pricing</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Our pricing is designed to be flexible and fair, based on the type and value of ideas
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-card p-8 rounded-lg shadow-sm border border-border/50 flex flex-col h-full">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lightbulb className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold">Basic Ideas</h3>
+                <div className="mt-4 text-3xl font-bold">Free</div>
+                <p className="text-muted-foreground mt-2">Starting point for entrepreneurs</p>
+              </div>
+              
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Concept-level business ideas</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Industry and technology details</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Basic skill requirements</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Limited market insights</span>
+                </li>
+              </ul>
+              
+              <Button variant="outline" className="w-full mt-auto" onClick={handleMarketplaceClick}>
+                Browse Free Ideas
+              </Button>
+            </div>
+            
+            <div className="bg-card p-8 rounded-lg shadow-lg border-2 border-primary/50 flex flex-col h-full relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">
+                Popular
+              </div>
+              
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold">Premium Ideas</h3>
+                <div className="mt-4 text-3xl font-bold">$149 - $499</div>
+                <p className="text-muted-foreground mt-2">For serious entrepreneurs</p>
+              </div>
+              
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Detailed business model & strategy</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Interactive demo prototypes</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Market validation data</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Implementation roadmap</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Revenue projection models</span>
+                </li>
+              </ul>
+              
+              <Button className="w-full mt-auto" onClick={handleMarketplaceClick}>
+                Explore Premium Ideas
+              </Button>
+            </div>
+            
+            <div className="bg-card p-8 rounded-lg shadow-sm border border-border/50 flex flex-col h-full">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold">Enterprise Ideas</h3>
+                <div className="mt-4 text-3xl font-bold">$500+</div>
+                <p className="text-muted-foreground mt-2">For investors & businesses</p>
+              </div>
+              
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Everything in Premium tier</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Full ownership rights transfer</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Implementation consultation</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Technical specification documents</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                  <span>Priority support</span>
+                </li>
+              </ul>
+              
+              <Button variant="outline" className="w-full mt-auto" onClick={handleMarketplaceClick}>
+                View Enterprise Solutions
+              </Button>
+            </div>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+              Pricing varies based on the complexity, market potential, and included resources for each idea. All purchases include lifetime access to idea documentation.
+            </p>
+            <Link to="/signup">
+              <Button variant="outline">
+                Sign up to browse all ideas
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

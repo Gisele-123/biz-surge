@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -38,7 +39,7 @@ export default function Login() {
     // This would be replaced with actual authentication logic
     console.log(values);
     toast.success("Successfully logged in!");
-    navigate("/");
+    navigate("/app"); // Changed from "/" to "/app"
   }
 
   return (

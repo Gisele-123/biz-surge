@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -45,8 +46,8 @@ export default function Signup() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // This would be replaced with actual signup logic
     console.log(values);
-    toast.success("Account created successfully! Please verify your email.");
-    navigate("/verify-email");
+    toast.success("Account created successfully! Please log in.");
+    navigate("/login"); // Changed to redirect to login instead of verify-email
   }
 
   return (
