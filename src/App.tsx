@@ -16,6 +16,7 @@ import QuasarHome from "./pages/QuasarHome";
 import UploadIdea from "./pages/UploadIdea";
 import PurchaseIdea from "./pages/PurchaseIdea";
 import GenerateIdeas from "./pages/GenerateIdeas";
+import IdeaGenerator from "./pages/Ai-generator";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/purchase-idea/:id" element={<PurchaseIdea />} />
           <Route path="/generate-ideas" element={<GenerateIdeas />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/quasar/ai" element={<IdeaGenerator/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
