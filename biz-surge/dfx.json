@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "biz-surge-backend": {
+      "main": "src/biz-surge-backend/main.mo",
+      "type": "motoko"
+    },
+    "biz-surge-frontend": {
+      "dependencies": [
+        "biz-surge-backend"
+      ],
+      "source": [
+        "src/biz-surge-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "biz-surge-frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

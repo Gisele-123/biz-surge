@@ -7,7 +7,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@declarations/*": ["src/declarations/*"],
+      "signup_canister": ["./src/declarations/signup_canister"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

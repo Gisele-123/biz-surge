@@ -1,0 +1,16 @@
+// Version: 1.0.0
+type Idea =
+  {
+    createdAt : Int;
+    creator : UserId;
+    description : Text;
+    id : IdeaId;
+    tags : [Text];
+    title : Text
+  };
+type IdeaId = Nat;
+type UserId = Principal;
+actor {
+  stable var ideas : [Idea];
+  stable var nextId : Nat
+};

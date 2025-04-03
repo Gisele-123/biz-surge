@@ -1,0 +1,17 @@
+{
+  "disable_security_policy_warning": true,
+  "assets": {
+    "include": [
+      {
+        "from": "dist",
+        "to": "/",
+        "ignore": ["robots.txt"] // Skip dist/robots.txt
+      },
+      {
+        "from": "public",
+        "to": "/",
+        "ignore": ["index.html"] // Skip public/index.html
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+type UserId = principal;
+type IdeaId = nat;
+type Idea = 
+ record {
+   createdAt: int;
+   creator: UserId;
+   description: text;
+   id: IdeaId;
+   tags: vec text;
+   title: text;
+ };
+service : {
+  createIdea: (text, text, vec text) -> (IdeaId);
+  getAllIdeas: () -> (vec Idea) query;
+  getIdea: (IdeaId) -> (opt Idea) query;
+  getUserIdeas: (UserId) -> (vec Idea) query;
+}

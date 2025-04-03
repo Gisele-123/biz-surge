@@ -1,0 +1,18 @@
+{
+  "canisters": {
+    "auth": {
+      "main": "backend/src/auth/main.mo",
+      "type": "motoko"
+    },
+    "ideas": {
+      "main": "backend/src/ideas/main.mo",
+      "type": "motoko"
+    },
+    "frontend": {
+      "type": "assets",
+      "source": ["dist"],
+      "dependencies": ["auth"]
+    }
+  },
+  "version": 1
+}

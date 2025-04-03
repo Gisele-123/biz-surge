@@ -1,0 +1,13 @@
+type User = 
+ record {
+   email: text;
+   emailVerified: bool;
+   name: text;
+   passwordHash: text;
+ };
+service : {
+  getCurrentUser: () -> (opt User) query;
+  login: (text, text) -> (bool);
+  signup: (text, text, text, text) -> (bool);
+  verifyEmail: () -> (bool);
+}
