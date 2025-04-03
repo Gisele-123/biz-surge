@@ -13,7 +13,7 @@ const Dashboard = ({ sidebarCollapsed }: DashboardProps) => {
       sidebarCollapsed ? "ml-16" : "ml-64"
     )}>
       <div className="py-8">
-        <h1 className="text-3xl font-bold mb-2">Welcome back, <span className="text-gradient">Linda</span></h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome back, <span className="text-gradient">Auda</span></h1>
         <p className="text-muted-foreground">Let's discover your next business opportunity</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
