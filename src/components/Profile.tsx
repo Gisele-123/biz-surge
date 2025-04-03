@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Award, BookOpen, Code, DollarSign, GraduationCap, MapPin, Save, User } from 'lucide-react';
@@ -22,7 +21,7 @@ const Profile = ({ sidebarCollapsed }: ProfileProps) => {
               JS
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold">John Smith</h2>
+              <h2 className="text-2xl font-bold">Linda Teta</h2>
               <div className="flex items-center text-muted-foreground mt-1">
                 <MapPin size={16} className="mr-1" />
                 <span>San Francisco, CA</span>
